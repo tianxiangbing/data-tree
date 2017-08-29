@@ -100,3 +100,7 @@ let d2 = new DataTree();
 d2.init({ data: data, groupby: ["字段一", "字段二"] });
 console.log(d2.result);
 ```
+# NPMJS
+```bash
+npm install --save  datatotree
+```
