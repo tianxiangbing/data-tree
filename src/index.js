@@ -5,7 +5,7 @@
  * Date: 2017-08-29
  * Time: 10:00:00
  * Contact: 55342775@qq.com
- * desc: 主旨是对某一时间段里的数据进行合并，重复的记录进行去重，只取最新的记录。比如一秒钟来了1000条数据，其中有500条是重复的，那这一秒钟应该只返回500条结果。
+ * desc: 主旨是对数组数据进行分组展示，并且可以根据关系进行树状的展示。
  * 请使用https://github.com/tianxiangbing/data-tree 上的代码
  */
 (function (definition) {
@@ -32,7 +32,7 @@
             let groupby = this.ss.groupby;
             let key = groupby[i];
             data.forEach(function (item) {
-                if (groupby.length === i +1) {
+                if (groupby.length === i + 1) {
                     json[item[key]] = json[item[key]] || [];
                     json[item[key]].push(item);
                 } else {
@@ -45,14 +45,32 @@
                     });
                 }
             });
-            if (groupby.length === i+1) {
+            if (groupby.length === i + 1) {
                 return;
             }
             for (let k in json) {
                 if (json.hasOwnProperty(k) && k.indexOf('__') === -1) {
-                    this.format(json[k].__arr, i+1, json[k])
+                    this.format(json[k].__arr, i + 1, json[k])
                 }
             }
+        }
+        static convert({ data = [], parentField = "parentId", topValue = 0, keyId = "id" }) {
+            let result = [];
+            result = this.returnChild({ data, parentField, parentId: topValue, keyId });
+            return result;
+        }
+        static returnChild({ data = [], parentField = "parentId", parentId = 0, keyId }) {
+            let res = [];
+            data.forEach(item => {
+                if (item[parentField] == parentId) {
+                    item.child = this.returnChild({ data, parentField, parentId: item[keyId] ,keyId});
+                    if (item.child.length ===0) {
+                        delete item["child"];
+                    }
+                    res.push(item);
+                }
+            });
+            return res;
         }
     }
     return DataTree;

@@ -15,7 +15,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  * Date: 2017-08-29
  * Time: 10:00:00
  * Contact: 55342775@qq.com
- * desc: 主旨是对某一时间段里的数据进行合并，重复的记录进行去重，只取最新的记录。比如一秒钟来了1000条数据，其中有500条是重复的，那这一秒钟应该只返回500条结果。
+ * desc: 主旨是对数组数据进行分组展示，并且可以根据关系进行树状的展示。
  * 请使用https://github.com/tianxiangbing/data-tree 上的代码
  */
 (function (definition) {
@@ -71,6 +71,47 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         this.format(json[k].__arr, i + 1, json[k]);
                     }
                 }
+            }
+        }], [{
+            key: "convert",
+            value: function convert(_ref) {
+                var _ref$data = _ref.data,
+                    data = _ref$data === undefined ? [] : _ref$data,
+                    _ref$parentField = _ref.parentField,
+                    parentField = _ref$parentField === undefined ? "parentId" : _ref$parentField,
+                    _ref$topValue = _ref.topValue,
+                    topValue = _ref$topValue === undefined ? 0 : _ref$topValue,
+                    _ref$keyId = _ref.keyId,
+                    keyId = _ref$keyId === undefined ? "id" : _ref$keyId;
+
+                var result = [];
+                result = this.returnChild({ data: data, parentField: parentField, parentId: topValue, keyId: keyId });
+                return result;
+            }
+        }, {
+            key: "returnChild",
+            value: function returnChild(_ref2) {
+                var _this = this;
+
+                var _ref2$data = _ref2.data,
+                    data = _ref2$data === undefined ? [] : _ref2$data,
+                    _ref2$parentField = _ref2.parentField,
+                    parentField = _ref2$parentField === undefined ? "parentId" : _ref2$parentField,
+                    _ref2$parentId = _ref2.parentId,
+                    parentId = _ref2$parentId === undefined ? 0 : _ref2$parentId,
+                    keyId = _ref2.keyId;
+
+                var res = [];
+                data.forEach(function (item) {
+                    if (item[parentField] == parentId) {
+                        item.child = _this.returnChild({ data: data, parentField: parentField, parentId: item[keyId], keyId: keyId });
+                        if (item.child.length === 0) {
+                            delete item["child"];
+                        }
+                        res.push(item);
+                    }
+                });
+                return res;
             }
         }]);
 
