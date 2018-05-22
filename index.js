@@ -6,6 +6,8 @@ var _createClass = function () { function defineProperties(target, props) { for 
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /*
@@ -85,7 +87,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     keyId = _ref$keyId === undefined ? "id" : _ref$keyId;
 
                 var result = [];
-                result = this.returnChild({ data: data, parentField: parentField, parentId: topValue, keyId: keyId });
+                result = this.returnChild({
+                    data: data, parentField: parentField,
+                    parentId: topValue,
+                    keyId: keyId,
+                    path: { id: [], parents: [] }
+                });
                 return result;
             }
         }, {
@@ -95,23 +102,77 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
                 var _ref2$data = _ref2.data,
                     data = _ref2$data === undefined ? [] : _ref2$data,
+                    _ref2$level = _ref2.level,
+                    level = _ref2$level === undefined ? 0 : _ref2$level,
                     _ref2$parentField = _ref2.parentField,
                     parentField = _ref2$parentField === undefined ? "parentId" : _ref2$parentField,
                     _ref2$parentId = _ref2.parentId,
                     parentId = _ref2$parentId === undefined ? 0 : _ref2$parentId,
-                    keyId = _ref2.keyId;
+                    keyId = _ref2.keyId,
+                    _ref2$parent = _ref2.parent,
+                    parent = _ref2$parent === undefined ? null : _ref2$parent,
+                    path = _ref2.path;
 
                 var res = [];
                 data.forEach(function (item) {
                     if (item[parentField] == parentId) {
-                        item.child = _this.returnChild({ data: data, parentField: parentField, parentId: item[keyId], keyId: keyId });
+                        item._parent = parent;
+                        item._level = level;
+                        var currentPath = JSON.parse(JSON.stringify(path));
+                        currentPath.id.push(item[keyId]);
+                        currentPath.parents.push(_extends({}, item));
+                        item._path = currentPath;
+                        res.push(item);
+                        item.child = _this.returnChild({
+                            data: data,
+                            level: level + 1,
+                            parentField: parentField,
+                            parentId: item[keyId],
+                            keyId: keyId,
+                            parent: item,
+                            path: currentPath
+                        });
                         if (item.child.length === 0) {
                             delete item["child"];
                         }
-                        res.push(item);
                     }
                 });
                 return res;
+            }
+        }, {
+            key: "query",
+            value: function query(settings) {
+                var defaultOption = _extends({
+                    data: [], keyId: 'id', value: '', childField: "child", result: []
+                }, settings);
+                if (defaultOption.data.constructor === Array) {
+                    this._getValue(defaultOption);
+                } else {
+                    this._getValue.apply(this, [{ data: [defaultOption.data] }].concat(_toConsumableArray(defaultOption)));
+                }
+                return defaultOption.result;
+            }
+        }, {
+            key: "_getValue",
+            value: function _getValue(_ref3) {
+                var _this2 = this,
+                    _arguments = arguments;
+
+                var data = _ref3.data,
+                    keyId = _ref3.keyId,
+                    value = _ref3.value,
+                    childField = _ref3.childField,
+                    result = _ref3.result;
+
+                data.forEach(function (item) {
+                    if (item[keyId] == value) {
+                        result.push(item);
+                    }
+                    if (item.hasOwnProperty(childField)) {
+                        result.concat(_this2._getValue(_extends(_arguments[0], { data: item[childField] })));
+                    }
+                });
+                return result;
             }
         }]);
 

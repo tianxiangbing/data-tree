@@ -56,21 +56,62 @@
         }
         static convert({ data = [], parentField = "parentId", topValue = 0, keyId = "id" }) {
             let result = [];
-            result = this.returnChild({ data, parentField, parentId: topValue, keyId });
+            result = this.returnChild({
+                data, parentField,
+                parentId: topValue,
+                keyId,
+                path: { id: [], parents: [] }
+            });
             return result;
         }
-        static returnChild({ data = [], parentField = "parentId", parentId = 0, keyId }) {
+        static returnChild({ data = [], level = 0, parentField = "parentId", parentId = 0, keyId, parent = null, path }) {
             let res = [];
             data.forEach(item => {
                 if (item[parentField] == parentId) {
-                    item.child = this.returnChild({ data, parentField, parentId: item[keyId] ,keyId});
-                    if (item.child.length ===0) {
+                    item._parent = parent
+                    item._level = level;
+                    let currentPath = JSON.parse(JSON.stringify(path))
+                    currentPath.id.push(item[keyId]);
+                    currentPath.parents.push(Object.assign({}, item))
+                    item._path = currentPath;
+                    res.push(item);
+                    item.child = this.returnChild({
+                        data,
+                        level: level + 1,
+                        parentField,
+                        parentId: item[keyId],
+                        keyId,
+                        parent: item,
+                        path: currentPath
+                    });
+                    if (item.child.length === 0) {
                         delete item["child"];
                     }
-                    res.push(item);
                 }
             });
             return res;
+        }
+        static query(settings) {
+            let defaultOption = Object.assign({
+                data: [], keyId: 'id', value: '', childField: "child",result:[]
+            }, settings)
+            if (defaultOption.data.constructor === Array) {
+                 this._getValue(defaultOption)
+            } else {
+                 this._getValue({ data: [defaultOption.data]}, ...defaultOption);
+            }
+            return defaultOption.result;
+        }
+        static _getValue({ data, keyId, value, childField, result }) {
+            data.forEach(item => {
+                if (item[keyId] == value) {
+                    result.push(item);
+                }
+                if (item.hasOwnProperty(childField)) {
+                    result.concat(this._getValue(Object.assign(arguments[0],{ data: item[childField] })));
+                }
+            });
+            return result;
         }
     }
     return DataTree;

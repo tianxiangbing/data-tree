@@ -152,6 +152,12 @@ console.log(JSON.stringify(res))
 ]
 */
 ```
+新增`_path`和`_parents`属性绑定它的层级树路径，里面存储着从顶层一直到底层的数据。新增`_level`属性保存当前层级数。
+
+新增query方法查找节点对象
+## query:(data: [], keyId: 'id', value: '', childField: "child")
+    let q = DataTree.query({data:res,value:'3'});
+    console.log(q)
 # NPMJS
 ```bash
 npm install --save  datatotree
