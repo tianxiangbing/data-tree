@@ -118,21 +118,25 @@ console.log(JSON.stringify(res))
         "id": 1,
         "parentId": 0,
         "text": "我是顶级",
-        "child": [
+        "name": "我是顶级",
+        "children": [
             {
                 "id": 2,
                 "parentId": 1,
                 "text": "我是一级",
-                "child": [
+                "name": "我是一级",
+                "children": [
                     {
                         "id": 3,
                         "parentId": 2,
                         "text": "我是二级",
-                        "child": [
+                        "name": "我是二级",
+                        "children": [
                             {
                                 "id": 5,
                                 "parentId": 3,
-                                "text": "我是二一级"
+                                "text": "我是二一级",
+                                "name": "我是二一级"
                             }
                         ]
                     }
@@ -144,11 +148,13 @@ console.log(JSON.stringify(res))
         "id": 6,
         "parentId": 0,
         "text": "我是顶级2",
-        "child": [
+        "name": "我是顶级2",
+        "children": [
             {
                 "id": 4,
                 "parentId": 6,
-                "text": "我是一一级"
+                "text": "我是一一级",
+                "name": "我是一一级"
             }
         ]
     }
