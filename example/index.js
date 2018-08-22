@@ -31,9 +31,12 @@ let d3 = [
     { id: 4, parentId: 6, text: "我是一一级" },
     { id: 5, parentId: 3, text: "我是二一级" }
 ];
-let res = DataTree.convert({ data: d3, parentField: "parentId", topValue: 0, keyId: "id" });
+//childname默认为child,处理数据使用format回调方法
+let res = DataTree.convert({ data: d3, parentField: "parentId", topValue: 0, keyId: "id" ,childname:'children',format(item){
+    item.name = item.text;
+}});
 console.log(res)
-console.log(res[0].child[0].child[0]._path)
+console.log(res[0].children[0].children[0]._path)
 console.log(res.constructor)
 let q = DataTree.query({data:res,value:'3'});
 console.log(q)

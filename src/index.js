@@ -54,17 +54,19 @@
                 }
             }
         }
-        static convert({ data = [], parentField = "parentId", topValue = 0, keyId = "id" }) {
+        static convert({ data = [], parentField = "parentId", topValue = 0, keyId = "id" ,childname="child",format}) {
             let result = [];
             result = this.returnChild({
                 data, parentField,
                 parentId: topValue,
                 keyId,
+                childname,
+                format,
                 path: { id: [], parents: [] }
             });
             return result;
         }
-        static returnChild({ data = [], level = 0, parentField = "parentId", parentId = 0, keyId, parent = null, path }) {
+        static returnChild({ data = [], level = 0, parentField = "parentId", parentId = 0, keyId, parent = null, path,format,childname }) {
             let res = [];
             data.forEach(item => {
                 if (item[parentField] == parentId) {
@@ -74,18 +76,26 @@
                     currentPath.id.push(item[keyId]);
                     currentPath.parents.push(Object.assign({}, item))
                     item._path = currentPath;
+                    if(format){
+                        let ret = format(item);
+                        if(typeof ret !='undefined'){
+                            item = ret;
+                        }
+                    }
                     res.push(item);
-                    item.child = this.returnChild({
+                    item[childname] = this.returnChild({
                         data,
                         level: level + 1,
                         parentField,
                         parentId: item[keyId],
                         keyId,
                         parent: item,
+                        childname,
+                        format,
                         path: currentPath
                     });
-                    if (item.child.length === 0) {
-                        delete item["child"];
+                    if (item[childname].length === 0) {
+                        delete item[childname];
                     }
                 }
             });

@@ -84,13 +84,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     _ref$topValue = _ref.topValue,
                     topValue = _ref$topValue === undefined ? 0 : _ref$topValue,
                     _ref$keyId = _ref.keyId,
-                    keyId = _ref$keyId === undefined ? "id" : _ref$keyId;
+                    keyId = _ref$keyId === undefined ? "id" : _ref$keyId,
+                    _ref$childname = _ref.childname,
+                    childname = _ref$childname === undefined ? "child" : _ref$childname,
+                    format = _ref.format;
 
                 var result = [];
                 result = this.returnChild({
                     data: data, parentField: parentField,
                     parentId: topValue,
                     keyId: keyId,
+                    childname: childname,
+                    format: format,
                     path: { id: [], parents: [] }
                 });
                 return result;
@@ -111,7 +116,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                     keyId = _ref2.keyId,
                     _ref2$parent = _ref2.parent,
                     parent = _ref2$parent === undefined ? null : _ref2$parent,
-                    path = _ref2.path;
+                    path = _ref2.path,
+                    format = _ref2.format,
+                    childname = _ref2.childname;
 
                 var res = [];
                 data.forEach(function (item) {
@@ -122,18 +129,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                         currentPath.id.push(item[keyId]);
                         currentPath.parents.push(_extends({}, item));
                         item._path = currentPath;
+                        if (format) {
+                            var ret = format(item);
+                            if (typeof ret != 'undefined') {
+                                item = ret;
+                            }
+                        }
                         res.push(item);
-                        item.child = _this.returnChild({
+                        item[childname] = _this.returnChild({
                             data: data,
                             level: level + 1,
                             parentField: parentField,
                             parentId: item[keyId],
                             keyId: keyId,
                             parent: item,
+                            childname: childname,
+                            format: format,
                             path: currentPath
                         });
-                        if (item.child.length === 0) {
-                            delete item["child"];
+                        if (item[childname].length === 0) {
+                            delete item[childname];
                         }
                     }
                 });
