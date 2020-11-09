@@ -1,11 +1,11 @@
 {
   "name": "datatotree",
-  "version": "0.0.4",
+  "version": "1.0.1",
   "description": "把扁平化的表格数据转化成树状的json格式。",
   "main": "index.js",
   "scripts": {
     "prepublish": "babel src -d .",
-    "test":"node example/index.js"
+    "test": "node example/index.js"
   },
   "repository": {
     "type": "git",

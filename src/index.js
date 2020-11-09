@@ -23,15 +23,19 @@
     class DataTree {
         constructor() {
             this.result = {};
+            this.orderList=[];
         }
         init(settings) {
             this.ss = Object.assign({ data: [], groupby: [] }, settings);
-            this.format(this.ss.data, 0, this.result);
+            this.format(this.ss.data, 0, this.result,this.orderList);
         }
-        format(data, i, json) {
+        format(data, i, json,orderList) {
             let groupby = this.ss.groupby;
             let key = groupby[i];
             data.forEach(function (item) {
+                if(orderList && !json.hasOwnProperty(item[key])){
+                    orderList.push(item[key]);
+                }
                 if (groupby.length === i + 1) {
                     json[item[key]] = json[item[key]] || [];
                     json[item[key]].push(item);

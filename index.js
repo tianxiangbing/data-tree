@@ -38,20 +38,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             _classCallCheck(this, DataTree);
 
             this.result = {};
+            this.orderList = [];
         }
 
         _createClass(DataTree, [{
             key: "init",
             value: function init(settings) {
                 this.ss = _extends({ data: [], groupby: [] }, settings);
-                this.format(this.ss.data, 0, this.result);
+                this.format(this.ss.data, 0, this.result, this.orderList);
             }
         }, {
             key: "format",
-            value: function format(data, i, json) {
+            value: function format(data, i, json, orderList) {
                 var groupby = this.ss.groupby;
                 var key = groupby[i];
                 data.forEach(function (item) {
+                    if (orderList && !json.hasOwnProperty(item[key])) {
+                        orderList.push(item[key]);
+                    }
                     if (groupby.length === i + 1) {
                         json[item[key]] = json[item[key]] || [];
                         json[item[key]].push(item);
